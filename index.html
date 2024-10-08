@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Ethical Codes</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="blur">
+      <div class="container">
+        <h1>Ethical Codes for AI Systems</h1>
+
+        <form id="filter-form">
+          <button type="button" id="add-file-btn">Add File</button>
+          <div class="form-witout-button">
+            <div class="form-fields">
+              <input
+                type="text"
+                name="name"
+                placeholder="Document/Entity Name"
+              />
+              <input type="text" name="region" placeholder="Region/Location" />
+              <input type="number" name="year" placeholder="Year (YYYY)" />
+
+              <select name="sector" id="sector">
+                <option value="" disabled selected>
+                  Select sector (optional)
+                </option>
+                <option value="government">Government</option>
+                <option value="private sector">Private Sector</option>
+                <option value="professional association">
+                  Professional Association
+                </option>
+                <option value="intergovernmental organisation">
+                  Intergovernmental Organisation
+                </option>
+                <option value="academia">Academia</option>
+                <option value="none">None</option>
+              </select>
+            </div>
+            <div class="values">
+              <div class="column-1">
+                <label
+                  ><input
+                    type="checkbox"
+                    name="values"
+                    value="Accountability"
+                  />
+                  Accountability</label
+                >
+                <label
+                  ><input type="checkbox" name="values" value="Autonomy" />
+                  Autonomy</label
+                >
+                <label
+                  ><input type="checkbox" name="values" value="Collaboration" />
+                  Collaboration</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="values"
+                    value="Controllability"
+                  />
+                  Controllability</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="values"
+                    value="Explainability"
+                  />
+                  Explainability</label
+                >
+                <label
+                  ><input type="checkbox" name="values" value="Fairness" />
+                  Fairness</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="values"
+                    value="Human oversight"
+                  />
+                  Human oversight</label
+                >
+
+                <label
+                  ><input type="checkbox" name="values" value="Human rights" />
+                  Human rights</label
+                >
+
+                <label
+                  ><input type="checkbox" name="values" value="Privacy" />
+                  Privacy</label
+                >
+              </div>
+              <div class="column-2">
+                <label
+                  ><input
+                    type="checkbox"
+                    name="values"
+                    value="Risk management"
+                  />
+                  Risk management</label
+                >
+                <label
+                  ><input type="checkbox" name="values" value="Robustness" />
+                  Robustness</label
+                >
+                <label
+                  ><input type="checkbox" name="values" value="Safety" />
+                  Safety</label
+                >
+                <label
+                  ><input type="checkbox" name="values" value="Security" />
+                  Security</label
+                >
+                <label
+                  ><input type="checkbox" name="values" value="Well-being" />
+                  Well-being</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="values"
+                    value="Contestability"
+                  />
+                  Contestability</label
+                >
+                <label
+                  ><input type="checkbox" name="values" value="Effectiveness" />
+                  Effectiveness</label
+                >
+                <label
+                  ><input type="checkbox" name="values" value="Solidarity" />
+                  Solidarity</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="values"
+                    value="User assistance"
+                  />
+                  User assistance</label
+                >
+              </div>
+            </div>
+          </div>
+
+          <button type="submit">Apply search</button>
+        </form>
+
+        <div id="results"></div>
+      </div>
+
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          document
+            .getElementById("add-file-btn")
+            .addEventListener("click", () => {
+              window.location.href = "/addFile";
+            });
+          fetchData();
+
+          document
+            .getElementById("filter-form")
+            .addEventListener("submit", function (e) {
+              e.preventDefault();
+              fetchData(new FormData(e.target));
+            });
+        });
+
+        function fetchData(formData = null) {
+          let queryString = formData
+            ? new URLSearchParams(formData).toString()
+            : "";
+          fetch(`/api/documents?${queryString}`)
+            .then((response) => response.json())
+            .then((data) => displayResults(data));
+        }
+
+        function displayResults(data) {
+          const resultsDiv = document.getElementById("results");
+          resultsDiv.innerHTML = ""; // Clear previous results
+
+          data.forEach((doc) => {
+            const docDiv = document.createElement("div");
+            docDiv.classList.add("result-item");
+
+            // Create the result structure with placeholders
+            docDiv.innerHTML = `
+              <div class="result-info">
+                <h3>${doc["Document name"]}</h3>
+                <p>Region: ${doc["Location"]}, ${doc["Region"]}</p>
+                <p>Year: ${doc["Year"]}</p>
+                <p>Sector: ${doc["Sector"]}</p>
+              </div>
+              <a href="#" class="download-btn" id="download-link-${doc["ID"]}" target="_blank" title="Open">
+                <i class="fas fa-external-link-alt"></i> Open
+              </a>
+            `;
+
+            resultsDiv.appendChild(docDiv);
+
+            // Check if there's a file URL in the document
+            if (doc["File URL"]) {
+              // Use the provided link
+              const downloadBtn = document.getElementById(
+                `download-link-${doc["ID"]}`
+              );
+              downloadBtn.href = doc["File URL"];
+            } else {
+              // Fetch the signed URL from Firebase Storage
+              fetch(`/file/${doc["ID"]}`)
+                .then((response) => response.json())
+                .then((data) => {
+                  const downloadBtn = document.getElementById(
+                    `download-link-${doc["ID"]}`
+                  );
+                  if (downloadBtn) {
+                    downloadBtn.href = data.url; // Assign the Firebase download URL
+                    downloadBtn.setAttribute("download", doc["Document name"]); // Optional: Set a download attribute with the file name
+                  }
+                })
+                .catch((error) => {
+                  console.error("Error fetching download URL:", error);
+                });
+            }
+          });
+        }
+      </script>
+
+      <!-- Styles section at the bottom -->
+      <style>
+        /* Basic reset */
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        /* Body styling */
+        body {
+          background-image: url("https://cdn.pixabay.com/photo/2021/12/02/06/00/digitization-6839711_1280.jpg");
+
+          font-family: cursive;
+          line-height: 1.6;
+          background-color: #f4f4f4;
+          color: #333;
+        }
+
+        /* Main container */
+        .container {
+          margin-top: 50px;
+          width: 70%;
+          margin: 0 auto;
+          padding: 20px;
+          background: #90bce0ca;
+          border-radius: 8px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .blur {
+          background-color: #dddddd2d;
+          display: flex;
+          padding: 20px;
+        }
+        /* Heading */
+        h1 {
+          text-align: center;
+          margin-bottom: 20px;
+          font-size: 32px;
+        }
+
+        /* Form styling */
+        .form-fields {
+          display: flex;
+          flex-direction: column;
+          width: 49%;
+        }
+        .form-witout-button {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between; /* Space out the form fields and checkboxes */
+          gap: 20px; /* Adjust the gap as needed */
+          align-items: flex-start; /* Align items at the top */
+          width: 100%;
+        }
+        form {
+          flex-direction: column;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start; /* Aligns items at the top */
+          gap: 20px; /* Space between form fields and checkboxes */
+        }
+
+        form input,
+        form select,
+        form button,
+        form label {
+          font-family: cursive;
+          font-size: 16px;
+          padding: 10px;
+          border-radius: 4px;
+          margin-bottom: 10px; /* Spacing between form elements */
+        }
+
+        .values {
+          flex-direction: row;
+          justify-content: space-between; /* Space out the form fields and checkboxes */
+          gap: 20px; /* Adjust the gap as needed */
+          align-items: flex-start; /* Align items at the top */
+          display: flex;
+
+          width: 45%;
+        }
+        .column-1,
+        .column-2 {
+          font-weight: 600;
+          max-width: 250px; /* Adjust as needed */
+        }
+
+        .values label {
+          display: block;
+          margin: 0px;
+          padding: 0px;
+        }
+
+        form button {
+          background-color: #233293;
+          color: white;
+          border: none;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+        }
+
+        form button:hover {
+          background-color: #0056b3;
+        }
+
+        /* Results container */
+        #results {
+          margin-top: 20px;
+        }
+
+        .result-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: #ffffff4e;
+          padding: 10px;
+          border: 1px solid #ddd;
+          margin-bottom: 10px;
+          border-radius: 4px;
+        }
+        .result-info {
+          max-width: calc(
+            100% - 100px
+          ); /* Adjusts for the width of the button */
+        }
+        .download-btn {
+          color: white;
+          padding: 8px 12px;
+          border-radius: 4px;
+          text-decoration: none;
+          border: none;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+        }
+
+        .download-btn:hover {
+          background-color: rgba(0, 87, 179, 0.61);
+        }
+
+        .result-item h3 {
+          margin-bottom: 5px;
+        }
+
+        .result-item p {
+          margin-bottom: 5px;
+        }
+
+        .result-item a {
+          color: #233293;
+          text-decoration: none;
+        }
+
+        .result-item a:hover {
+          text-decoration: underline;
+        }
+      </style>
+    </div>
+  </body>
+</html>

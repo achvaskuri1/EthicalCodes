@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Ethical Codes</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="blur">
+      <div class="container">
+        <h1>Ethical Codes for AI Systems</h1>
+        <form id="filter-form" enctype="multipart/form-data">
+          <div class="form-witout-button">
+            <div class="form-fields">
+                <input
+                  type="text"
+                  name="documentName"
+                  placeholder="Document Name"
+                  required
+                />
+                <input
+                  type="text"
+                  name="entityName"
+                  placeholder="Entity Name"
+                  required
+                />
+                <input
+                  type="text"
+                  name="location"
+                  placeholder="Location"
+                />
+                <input
+                  type="text"
+                  name="region"
+                  placeholder="Region"
+                />
+                <input
+                  type="number"
+                  name="year"
+                  placeholder="Year (YYYY)"
+                />
+    
+                <select name="sector" id="sector">
+                  <option value="" disabled selected>
+                    Select sector (optional)
+                  </option>
+                  <option value="government">Government</option>
+                  <option value="private sector">Private Sector</option>
+                  <option value="professional association">
+                    Professional Association
+                  </option>
+                  <option value="intergovernmental organisation">
+                    Intergovernmental Organisation
+                  </option>
+                  <option value="academia">Academia</option>
+                  <option value="none">None</option>
+                </select>
+              </div>
+    
+
+            <div class="values">
+              <div class="column-1">
+                <label
+                  ><input
+                    type="checkbox"
+                    name="values"
+                    value="Accountability"
+                  />
+                  Accountability</label
+                >
+                <label
+                  ><input type="checkbox" name="values" value="Autonomy" />
+                  Autonomy</label
+                >
+                <label
+                  ><input type="checkbox" name="values" value="Collaboration" />
+                  Collaboration</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="values"
+                    value="Controllability"
+                  />
+                  Controllability</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="values"
+                    value="Explainability"
+                  />
+                  Explainability</label
+                >
+                <label
+                  ><input type="checkbox" name="values" value="Fairness" />
+                  Fairness</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="values"
+                    value="Human oversight"
+                  />
+                  Human oversight</label
+                >
+                <label
+                  ><input type="checkbox" name="values" value="Human rights" />
+                  Human rights</label
+                >
+                <label
+                  ><input type="checkbox" name="values" value="Privacy" />
+                  Privacy</label
+                >
+              </div>
+              <div class="column-2">
+                <label
+                  ><input
+                    type="checkbox"
+                    name="values"
+                    value="Risk management"
+                  />
+                  Risk management</label
+                >
+                <label
+                  ><input type="checkbox" name="values" value="Robustness" />
+                  Robustness</label
+                >
+                <label
+                  ><input type="checkbox" name="values" value="Safety" />
+                  Safety</label
+                >
+                <label
+                  ><input type="checkbox" name="values" value="Security" />
+                  Security</label
+                >
+                <label
+                  ><input type="checkbox" name="values" value="Well-being" />
+                  Well-being</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="values"
+                    value="Contestability"
+                  />
+                  Contestability</label
+                >
+                <label
+                  ><input type="checkbox" name="values" value="Effectiveness" />
+                  Effectiveness</label
+                >
+                <label
+                  ><input type="checkbox" name="values" value="Solidarity" />
+                  Solidarity</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="values"
+                    value="User assistance"
+                  />
+                  User assistance</label
+                >
+              </div>
+            </div>
+
+            <div class="form-fields">
+                <label for="fileUpload" style="font-size: large;font-weight:bold;">Upload File:</label>
+                <input type="file" name="file" id="fileUpload" />
+          
+                <label for="fileLink">or Enter File Link (URL):</label>
+                <input type="url" name="fileLink" id="fileLink" placeholder="https://example.com/file.pdf" />
+              </div>
+            </div>
+            <button type="submit">Submit and Upload</button>
+          <button type="button" id="go-back-btn">go back</button>
+          </form>
+
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          document
+            .getElementById("go-back-btn")
+            .addEventListener("click", () => {
+              window.location.href = "/";
+            });
+          document
+            .getElementById("filter-form")
+            .addEventListener("submit", function (e) {
+              e.preventDefault();
+              const formData = new FormData(e.target);
+              uploadData(formData);
+            });
+        });
+
+        function uploadData(formData) {
+          fetch("/uploadFile", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                alert("File uploaded and data saved successfully!");
+              } else {
+                alert("An error occurred: " + data.message);
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        }
+      </script>
+
+      <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          background-image: url("https://cdn.pixabay.com/photo/2021/12/02/06/00/digitization-6839711_1280.jpg");
+          font-family: cursive;
+          line-height: 1.6;
+          background-color: #f4f4f4;
+          color: #333;
+        }
+
+        .container {
+          margin-top: 50px;
+          width: 90%;
+          margin: 0 auto;
+          padding: 20px;
+          background: #90bce0ca;
+          border-radius: 8px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .blur {
+          background-color: #dddddd2d;
+          display: flex;
+          padding: 20px;
+        }
+
+        h1 {
+          text-align: center;
+          margin-bottom: 20px;
+          font-size: 32px;
+        }
+
+        .form-fields {
+          display: flex;
+          flex-direction: column;
+          width: 49%;
+        }
+
+        .form-witout-button {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          gap: 20px;
+          align-items: flex-start;
+          width: 100%;
+        }
+
+        form {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        form input,
+        form select,
+        form button,
+        form label {
+          font-family: cursive;
+          font-size: 16px;
+          padding: 10px;
+          border-radius: 4px;
+          margin-bottom: 10px;
+        }
+
+        .values {
+          display: flex;
+          gap: 20px;
+          align-items: flex-start;
+          width: 45%;
+        }
+
+        .column-1,
+        .column-2 {
+          font-weight: 600;
+          max-width: 250px;
+        }
+
+        .values label {
+          display: block;
+        }
+
+        form button {
+          background-color: #233293;
+          color: white;
+          border: none;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+        }
+
+        form button:hover {
+          background-color: #0056b3;
+        }
+
+        #results {
+          margin-top: 20px;
+        }
+
+        .result-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: #ffffff4e;
+          padding: 10px;
+          border: 1px solid #ddd;
+          margin-bottom: 10px;
+          border-radius: 4px;
+        }
+
+        .download-btn {
+          color: white;
+          padding: 8px 12px;
+          border-radius: 4px;
+          text-decoration: none;
+          border: none;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+        }
+
+        .download-btn:hover {
+          background-color: rgba(0, 87, 179, 0.61);
+        }
+      </style>
+    </div>
+  </body>
+</html>
