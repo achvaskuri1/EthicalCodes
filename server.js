@@ -182,6 +182,35 @@ app.post("/uploadFile", upload.single("file"), async (req, res) => {
   }
 });
 
+app.get("/file/:id", async (req, res) => {
+  const fileId = req.params.id; // Use the ID to locate the file
+  try {
+    const excelFilePath = await downloadExcelFile();
+
+    // Read the Excel file
+    const workbook = XLSX.readFile(excelFilePath);
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const data = XLSX.utils.sheet_to_json(sheet);
+    const document = data.find((doc) => doc.ID == fileId);
+
+    if (document && document["File URL"]) {
+      // If there's a link, redirect to it
+      return res.redirect(document["File URL"]);
+    } else {
+      // Fetch file from Firebase Storage if no link
+      const file = bucket.file(`${fileId}.pdf`); // Access file in Firebase Storage
+      const [url] = await file.getSignedUrl({
+        action: "read",
+        expires: "03-01-2025",
+      });
+
+      // Respond with the generated download URL
+      res.json({ url });
+    }
+  } catch (error) {
+    res.status(500).send("Error generating download link: " + error.message);
+  }
+});
 // API endpoint to filter documents
 app.get("/api/documents", async (req, res) => {
   try {
